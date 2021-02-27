@@ -155,7 +155,7 @@ return [
     |
     */
 
-    'domain' => 'localhost',
+    'domain' => env('SESSION_DOMAIN', 'localhost'),
 
     /*
     |--------------------------------------------------------------------------
