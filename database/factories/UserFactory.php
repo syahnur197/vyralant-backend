@@ -41,7 +41,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => 'password',
             'remember_token' => Str::random(10),
-            'image' => collect($images)->random(), // temporary
+            'image_url' => collect($images)->random(), // temporary
         ];
     }
 

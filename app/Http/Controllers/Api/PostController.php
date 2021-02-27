@@ -36,6 +36,11 @@ class PostController extends Controller
         return 'slug';
     }
 
+    protected function filterableBy() : array
+    {
+        return ['category'];
+    }
+
     protected function buildFetchQuery(Request $request, array $requestedRelations): Builder
     {
         $query = parent::buildFetchQuery($request, $requestedRelations);
