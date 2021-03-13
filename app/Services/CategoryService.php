@@ -2,15 +2,17 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Str;
+
 class CategoryService
 {
     const CATEGORIES = [
-        'Brunei',
-        'World',
-        'Entertainment',
-        'Lifestyle',
-        'Technology',
-        'Memes',
+        'brunei',
+        'world',
+        'entertainment',
+        'lifestyle',
+        'technology',
+        'memes',
     ];
 
     public function getCategories(): array
@@ -20,7 +22,7 @@ class CategoryService
 
     public function categoryExist($category): bool
     {
-        return in_array($category, self::CATEGORIES);
+        return in_array(Str::lower($category), self::CATEGORIES);
     }
 
     public function getRandomCategory(): string
