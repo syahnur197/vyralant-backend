@@ -14,6 +14,8 @@ class Post extends Model
     use UsesUuid,
         HasFactory;
 
+    protected $fillable = ['posted_by', 'title', 'slug', 'content', 'post_type', 'category'];
+
     protected $appends = ['posted_at', 'excerpt'];
 
     protected $casts = [
@@ -32,12 +34,14 @@ class Post extends Model
 
     public function upvotes()
     {
-        return $this->hasMany(Vote::class, 'post_id')->whereUpvote();
+        return $this->hasMany(Vote::class, 'post_id')
+            ->whereUpvote();
     }
 
     public function downvotes()
     {
-        return $this->hasMany(Vote::class, 'post_id')->whereDownvote();
+        return $this->hasMany(Vote::class, 'post_id')
+            ->whereDownvote();
     }
 
     public function getRatingAttribute($rating)

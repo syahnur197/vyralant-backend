@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasPosts;
 use App\Traits\UsesUuid;
 use App\Traits\User\CanVotePost;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -14,7 +15,8 @@ class User extends Authenticatable
     use UsesUuid,
         CanVotePost,
         HasFactory,
-        Notifiable;
+        Notifiable,
+        HasPosts;
 
     /**
      * The attributes that are mass assignable.

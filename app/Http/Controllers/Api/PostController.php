@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Post\StorePost;
 use App\Models\Post;
+use Exception;
 use Orion\Concerns\DisableAuthorization;
 // use Orion\Http\Controllers\Controller;
 use Orion\Http\Requests\Request;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
@@ -19,8 +22,8 @@ class PostController extends Controller
     {
         $posts = Post::with('poster')
             ->withRating()
-            ->orderBy('rating', 'desc')
-            ->orderBy('created_at', 'desc');
+            ->orderBy('created_at', 'desc')
+            ->orderBy('rating', 'desc');
 
         $posts = $posts->paginate($this->per_page_limit);
 
@@ -57,8 +60,36 @@ class PostController extends Controller
         ];
     }
 
-    public function store(Request $request)
+    public function store(StorePost $request)
     {
+        if (!$user = $request->user()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You must be authenticated to submit a post!',
+            ], 400);
+        }
+
+
+        $post_data = $request->validated();
+
+
+        try {
+            $post = $user->posts()->create($post_data);
+
+            return response()->json([
+                'success' => 'false',
+                'message' => 'Successfully created a post!',
+                'post'    => $post,
+            ], 201);
+
+        } catch (Exception $e) {
+            Log::error($e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to submit a post! Please try again!',
+            ], 400);
+        }
 
     }
 }

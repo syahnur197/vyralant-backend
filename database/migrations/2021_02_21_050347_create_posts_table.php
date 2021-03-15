@@ -20,8 +20,8 @@ class CreatePostsTable extends Migration
             $table->string('post_type');
             $table->string('title')->unique();
             $table->string('slug')->unique()->index();
-            $table->longText('content');
-            $table->string('image'); // temporary
+            $table->longText('content')->nullable();
+            $table->string('image')->nullable(); // temporary
             $table->timestamps();
         });
     }

@@ -24,9 +24,6 @@ class PostFactory extends Factory
      */
     public function definition()
     {
-        $category_service = app(CategoryService::class);
-        $post_type_service = app(PostTypeService::class);
-
         $user = User::inRandomOrder()->first();
 
         // temporary
@@ -42,8 +39,8 @@ class PostFactory extends Factory
         ];
 
         return [
-            'category' => $category_service->getRandomCategory(),
-            'post_type' => $post_type_service->getRandomPostType(),
+            'category' => CategoryService::getRandomCategory(),
+            'post_type' => PostTypeService::getRandomPostType(),
             'title' => $this->faker->sentence(),
             'content' => $this->faker->sentences($this->faker->numberBetween(5,15), true),
             'posted_by' => $user->id,

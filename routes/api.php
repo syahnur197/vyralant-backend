@@ -11,9 +11,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('posts', [PostController::class, 'index']);
-Route::get('posts/{slug}', [PostController::class, 'show']);
-Route::post('posts/search', [PostController::class, 'search']);
+Route::group(['prefix' => 'posts'], function() {
+    Route::get('/', [PostController::class, 'index']);
+    Route::get('{slug}', [PostController::class, 'show']);
+    Route::post('search', [PostController::class, 'search']);
+    Route::post('/', [PostController::class, 'store']);
+});
+
 
 // Route::group(['as' => 'api.'], function() {
 //     Orion::resource('posts', PostController::class);

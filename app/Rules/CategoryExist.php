@@ -8,8 +8,6 @@ use Illuminate\Contracts\Validation\Rule;
 class CategoryExist implements Rule
 {
 
-    private $service;
-
     /**
      * Create a new rule instance.
      *
@@ -17,7 +15,6 @@ class CategoryExist implements Rule
      */
     public function __construct()
     {
-        $this->service = app(CategoryService::class);
     }
 
     /**
@@ -29,7 +26,7 @@ class CategoryExist implements Rule
      */
     public function passes($attribute, $value)
     {
-        return $this->service->categoryExist($value);
+        return CategoryService::categoryExist($value);
     }
 
     /**

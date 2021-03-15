@@ -15,17 +15,17 @@ class CategoryService
         'memes',
     ];
 
-    public function getCategories(): array
+    public static function getCategories(): array
     {
         return self::CATEGORIES;
     }
 
-    public function categoryExist($category): bool
+    public static function categoryExist($category): bool
     {
         return in_array(Str::lower($category), self::CATEGORIES);
     }
 
-    public function getRandomCategory(): string
+    public static function getRandomCategory(): string
     {
         return collect(self::CATEGORIES)->random();
     }
