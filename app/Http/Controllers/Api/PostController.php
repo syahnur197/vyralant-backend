@@ -83,7 +83,7 @@ class PostController extends Controller
             ], 201);
 
         } catch (Exception $e) {
-            Log::error($e);
+            Log::error("PostController@store " . json_encode($e));
 
             return response()->json([
                 'success' => false,

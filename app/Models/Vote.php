@@ -13,8 +13,6 @@ class Vote extends Model
 
     protected $fillable = ['user_id', 'post_id', 'vote_type'];
 
-    use HasFactory;
-
     public function scopeWhereUpvote($query)
     {
         return $query->where('vote_type', self::UPVOTE);

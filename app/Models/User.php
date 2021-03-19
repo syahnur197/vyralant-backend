@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasPosts;
 use App\Traits\UsesUuid;
+use App\Models\Traits\HasPosts;
 use App\Traits\User\CanVotePost;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -16,7 +17,8 @@ class User extends Authenticatable
         CanVotePost,
         HasFactory,
         Notifiable,
-        HasPosts;
+        HasPosts,
+        HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
