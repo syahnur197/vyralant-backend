@@ -8,11 +8,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Post extends Model
+class Post extends Model implements HasMedia
 {
     use UsesUuid,
-        HasFactory;
+        HasFactory,
+        InteractsWithMedia;
 
     protected $fillable = ['posted_by', 'title', 'slug', 'content', 'post_type', 'category'];
 
@@ -26,6 +29,8 @@ class Post extends Model
     protected $hidden = [
         'posted_by',
     ];
+
+    // relationships
 
     public function poster()
     {
@@ -44,13 +49,15 @@ class Post extends Model
             ->whereDownvote();
     }
 
+    // accessors
+
     public function getRatingAttribute($rating)
     {
         $rating = $rating * 100;
 
         $rating = round($rating, 1);
 
-        $rating = number_format ( $rating, 1);
+        $rating = number_format($rating, 1);
 
         return $rating;
     }
@@ -62,18 +69,30 @@ class Post extends Model
 
     public function getExcerptAttribute()
     {
-        return Str::words($this->content,20);
+        return Str::words($this->content, 20);
     }
+
+    // scopes
 
     public function scopeWithRating(Builder $query)
     {
         // Laravel Performance Pattern FTW!!!
         $query->addSelect('*', 'upvotes_count', 'downvotes_count', DB::raw('(upvotes_count)/(upvotes_count+downvotes_count) as rating'));
-        $query->from(function($query) {
+        $query->from(function ($query) {
             $query->addSelect('*');
             $query->addSelect(DB::raw('(SELECT COUNT(*) FROM `votes` AS `uv` WHERE `uv`.`vote_type` = "upvote" AND `uv`.`post_id` = `posts`.`id`) AS upvotes_count'));
             $query->addSelect(DB::raw('(SELECT COUNT(*) FROM `votes` AS `dv` WHERE `dv`.`vote_type` = "downvote" AND `dv`.`post_id` = `posts`.`id`) AS downvotes_count'));
             $query->from('posts');
         }, 'posts');
+    }
+
+    // media library configs
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('image')
+            ->useDisk('s3')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png']);
     }
 }

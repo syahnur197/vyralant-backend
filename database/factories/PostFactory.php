@@ -26,25 +26,12 @@ class PostFactory extends Factory
     {
         $user = User::inRandomOrder()->first();
 
-        // temporary
-        $images = [
-            "/posts/1.jpg",
-            "/posts/2.jpg",
-            "/posts/3.jpg",
-            "/posts/4.jpg",
-            "/posts/5.jpg",
-            "/posts/6.jpg",
-            "/posts/7.jpg",
-            "/posts/8.jpg",
-        ];
-
         return [
             'category' => CategoryService::getRandomCategory(),
             'post_type' => PostTypeService::getRandomPostType(),
             'title' => $this->faker->sentence(),
-            'content' => $this->faker->sentences($this->faker->numberBetween(5,15), true),
+            'content' => $this->faker->sentences($this->faker->numberBetween(5, 15), true),
             'posted_by' => $user->id,
-            'image' => collect($images)->random(),
         ];
     }
 }

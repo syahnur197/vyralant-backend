@@ -21,7 +21,6 @@ namespace App\Models{
  * @property string $title
  * @property string $slug
  * @property string|null $content
- * @property string|null $image
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vote[] $downvotes
@@ -29,6 +28,8 @@ namespace App\Models{
  * @property-read mixed $excerpt
  * @property-read mixed $posted_at
  * @property-read mixed $rating
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection|\Spatie\MediaLibrary\MediaCollections\Models\Media[] $media
+ * @property-read int|null $media_count
  * @property-read \App\Models\User $poster
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vote[] $upvotes
  * @property-read int|null $upvotes_count
@@ -40,7 +41,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereContent($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Post whereImage($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Post wherePostType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Post wherePostedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereSlug($value)
@@ -48,7 +48,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Post whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Post withRating()
  */
-	class Post extends \Eloquent {}
+	class Post extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
 namespace App\Models{

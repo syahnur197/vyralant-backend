@@ -21,23 +21,6 @@ class PostObserver
     public function creating(Post $post)
     {
         $post->slug = Str::slug($post->title, '-');
-
-        if (!isset($post->image)) {
-
-            // temporary solution
-            $images = [
-                "/posts/1.jpg",
-                "/posts/2.jpg",
-                "/posts/3.jpg",
-                "/posts/4.jpg",
-                "/posts/5.jpg",
-                "/posts/6.jpg",
-                "/posts/7.jpg",
-                "/posts/8.jpg",
-            ];
-
-            $post->image = collect($images)->random();
-        }
     }
 
     public function saving(Post $post)
