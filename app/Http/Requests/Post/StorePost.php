@@ -32,7 +32,7 @@ class StorePost extends FormRequest
             'title' => ['required', 'unique:posts,title'],
             'content' => ['required'],
             'post_type' => ['required', Rule::in(PostTypeService::getPostTypes())],
-            'image' => ['required_if:post_type,image', 'file', 'image'],
+            'image' => ['required_if:post_type,image', 'file', 'image', 'max:1024'],
             'link' => ['required_if:post_type,link'],
         ];
     }
@@ -53,6 +53,7 @@ class StorePost extends FormRequest
 
             'image.required_if' => 'Please upload an image',
             'image.image' => 'File must be an image (png, jpg)!',
+            'image.max' => 'Image has to be less than 1 MB',
 
             'link.required_if' => 'Please specify a link',
         ];
