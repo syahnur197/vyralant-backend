@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\StorePost;
 use App\Http\Resources\Posts\PostResource;
+use App\Models\User;
 use App\Services\PostService;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileUnacceptableForCollection;
 
@@ -53,6 +54,7 @@ class PostController extends Controller
 
     public function store(StorePost $request)
     {
+        /** @var User $user */
         if (!$user = $request->user()) {
             return response()->json([
                 'success' => false,
@@ -75,6 +77,8 @@ class PostController extends Controller
                     ->usingFileName($file_name)
                     ->toMediaCollection('image');
             }
+
+            $user->upvote($post);
 
             DB::commit();
 

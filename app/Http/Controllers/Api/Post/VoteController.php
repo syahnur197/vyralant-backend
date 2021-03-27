@@ -40,7 +40,7 @@ class VoteController
             ]);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::info('VoteController: ' . $e->getMessage());
+            Log::info('VoteController@upvote: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
@@ -76,7 +76,7 @@ class VoteController
             ]);
         } catch (Exception $e) {
             DB::rollBack();
-            Log::info('VoteController: ' . $e->getMessage());
+            Log::info('VoteController@downvote: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
