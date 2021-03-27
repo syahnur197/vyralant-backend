@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Traits\CanComment;
 use App\Traits\UsesUuid;
-use App\Models\Traits\HasPosts;
-use App\Traits\User\CanVotePost;
+use App\Models\Traits\User\CanVote;
+use App\Models\Traits\User\HasPosts;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -14,10 +15,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     use UsesUuid,
-        CanVotePost,
+        CanVote,
         HasFactory,
         Notifiable,
         HasPosts,
+        CanComment,
         HasApiTokens;
 
     /**

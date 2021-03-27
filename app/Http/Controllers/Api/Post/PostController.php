@@ -1,43 +1,38 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Post;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Post\StorePost;
-use App\Http\Resources\Posts\PostResource;
-use App\Models\Post;
 use Exception;
+use App\Models\Post;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Post\StorePost;
+use App\Http\Resources\Posts\PostResource;
+use App\Services\PostService;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileUnacceptableForCollection;
 
 class PostController extends Controller
 {
     private $per_page_limit = 8;
 
-    public function index(Request $request)
+    public function index(PostService $service)
     {
-        $posts = Post::with('poster', 'media')
-            ->withRating()
-            ->orderBy('created_at', 'desc')
-            ->orderBy('rating', 'desc');
+        $posts = $service->getPostQuery();
 
         $posts = $posts->paginate($this->per_page_limit);
 
         return PostResource::collection($posts);
     }
 
-    public function search(Request $request)
+    public function search(Request $request, PostService $service)
     {
 
         $category = $request->input('category');
 
-        $posts = Post::with('poster')
-            ->withRating()
-            ->orderBy('rating', 'desc')
-            ->orderBy('created_at', 'desc')
+        $posts = $service->getPostQuery()
             ->where('category', strtolower($category));
 
         $posts = $posts->paginate($this->per_page_limit);
@@ -45,12 +40,9 @@ class PostController extends Controller
         return PostResource::collection($posts);
     }
 
-    public function show($slug)
+    public function show(Request $request, $slug)
     {
-        $post = Post::with('poster', 'media')
-            ->withRating()
-            ->orderBy('rating', 'desc')
-            ->orderBy('created_at', 'desc')
+        $post = Post::with('poster', 'media', 'rating')
             ->where('slug', $slug)
             ->first();
 

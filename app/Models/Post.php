@@ -2,19 +2,24 @@
 
 namespace App\Models;
 
+use App\Interfaces\VoteableInterface;
+use App\Models\Traits\HasVotes;
 use App\Traits\UsesUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Post extends Model implements HasMedia
+class Post extends Model implements HasMedia, VoteableInterface
 {
     use UsesUuid,
         HasFactory,
+        HasVotes,
         InteractsWithMedia;
 
     protected $fillable = ['posted_by', 'title', 'slug', 'content', 'post_type', 'category'];
@@ -32,35 +37,24 @@ class Post extends Model implements HasMedia
 
     // relationships
 
-    public function poster()
+    public function poster(): BelongsTo
     {
         return $this->belongsTo(User::class, 'posted_by');
     }
 
-    public function upvotes()
+    public function comments(): HasMany
     {
-        return $this->hasMany(Vote::class, 'post_id')
-            ->whereUpvote();
+        return $this->hasMany(Comment::class, 'post_id');
     }
 
-    public function downvotes()
+    // methods
+
+    public function hasComments()
     {
-        return $this->hasMany(Vote::class, 'post_id')
-            ->whereDownvote();
+        return $this->comments()->exists();
     }
 
     // accessors
-
-    public function getRatingAttribute($rating)
-    {
-        $rating = $rating * 100;
-
-        $rating = round($rating, 1);
-
-        $rating = number_format($rating, 1);
-
-        return $rating;
-    }
 
     public function getPostedAtAttribute()
     {
@@ -80,8 +74,8 @@ class Post extends Model implements HasMedia
         $query->addSelect('*', 'upvotes_count', 'downvotes_count', DB::raw('(upvotes_count)/(upvotes_count+downvotes_count) as rating'));
         $query->from(function ($query) {
             $query->addSelect('*');
-            $query->addSelect(DB::raw('(SELECT COUNT(*) FROM `votes` AS `uv` WHERE `uv`.`vote_type` = "upvote" AND `uv`.`post_id` = `posts`.`id`) AS upvotes_count'));
-            $query->addSelect(DB::raw('(SELECT COUNT(*) FROM `votes` AS `dv` WHERE `dv`.`vote_type` = "downvote" AND `dv`.`post_id` = `posts`.`id`) AS downvotes_count'));
+            $query->addSelect(DB::raw('(SELECT COUNT(*) FROM `votes` AS `uv` WHERE `uv`.`voteable_type` = "App\\\Models\\\Post" AND `uv`.`voteable_id` = `posts`.`id` AND `uv`.`vote_type` = "upvote" ) AS upvotes_count'));
+            $query->addSelect(DB::raw('(SELECT COUNT(*) FROM `votes` AS `dv` WHERE `dv`.`voteable_type` = "App\\\Models\\\Post" AND `dv`.`voteable_id` = `posts`.`id` AND `dv`.`vote_type` = "downvote" ) AS downvotes_count'));
             $query->from('posts');
         }, 'posts');
     }

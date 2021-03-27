@@ -29,5 +29,9 @@ class VotesSeeder extends Seeder
                 }
             });
         });
+
+        $posts->each(function (Post $post) {
+            $post->calculateRatings();
+        });
     }
 }

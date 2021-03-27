@@ -30,7 +30,7 @@ class StorePost extends FormRequest
         return [
             'category' => ['required', Rule::in(CategoryService::getCategories())],
             'title' => ['required', 'unique:posts,title'],
-            'content' => ['required'],
+            'content' => ['required', 'max:3000'],
             'post_type' => ['required', Rule::in(PostTypeService::getPostTypes())],
             'image' => ['required_if:post_type,image', 'file', 'image', 'max:1024'],
             'link' => ['required_if:post_type,link'],
@@ -47,6 +47,7 @@ class StorePost extends FormRequest
             'title.unique' => 'Please provide a unique title!',
 
             'content.required' => 'Please provide the content',
+            'content.max' => 'Content must not be more than 3000 characters',
 
             'post_type.required' => 'Please specify the post type',
             'post_type.in' => 'Post type provided is not valid!',

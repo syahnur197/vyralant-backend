@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Traits;
+namespace App\Models\Traits\User;
 
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Relations\HasMany;
