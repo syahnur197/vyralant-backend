@@ -42,7 +42,10 @@ trait HasVotes
         $upvotes_count = $this->upvotes()->count();
         $downvotes_count = $this->downvotes()->count();
         $votes_count = $this->votes()->count();
-        $ratings = ($upvotes_count / $votes_count) * 100;
+
+        $ratings = $votes_count === 0
+            ? 0.00
+            : ($upvotes_count / $votes_count) * 100;
 
         $this->rating()->updateOrCreate([], [
             'upvotes' => $upvotes_count,
