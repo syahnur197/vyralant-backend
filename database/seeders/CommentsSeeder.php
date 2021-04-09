@@ -32,6 +32,12 @@ class CommentsSeeder extends Seeder
 
                 $comment->posted_by = $user->id;
                 $comment->post_id = $post->id;
+
+                // malas ku buat nested comment, remove this code if I want
+                $comment->save();
+                return true;
+
+                // remove code above
                 if (!$post->hasComments()) {
                     $comment->save();
                     return true;

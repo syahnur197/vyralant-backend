@@ -30,7 +30,7 @@ class RegisterRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'min:3', 'max:50'],
             'email' => ['required', 'email', Rule::unique($users_table, 'email'), 'min:3', 'max:50'],
-            'username' => ['required', 'string', 'alpha_dash', Rule::unique($users_table, 'username'), 'min:3', 'max:30'],
+            'username' => ['required', 'string', 'alpha_num', Rule::unique($users_table, 'username'), 'min:3', 'max:30'],
             'password' => ['required', 'confirmed', 'min:8'],
         ];
     }
@@ -52,7 +52,7 @@ class RegisterRequest extends FormRequest
             'username.min' => 'Your username must be more than 3 characters',
             'username.max' => 'Your username must be be less than 30 characters',
             'username.unique' => 'Username has been taken',
-            'username.alpha_dash' => 'Username must only contain alphabets, numbers, dashes, or underscore',
+            'username.alpha_num' => 'Username must only contain alphabets, and / or number',
 
             'password.required' => 'Please enter your password',
             'password.confirmed' => 'Passwords do not match!',

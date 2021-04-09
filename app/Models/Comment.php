@@ -12,7 +12,7 @@ class Comment extends Model
 {
     use HasFactory, UsesUuid;
 
-    protected $fillabler = [
+    protected $fillable = [
         'posted_by',
         'post_id',
         'content',
@@ -31,5 +31,12 @@ class Comment extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class, 'parent_id');
+    }
+
+    // accessors
+
+    public function getPostedAtAttribute()
+    {
+        return $this->created_at->diffForHumans();
     }
 }

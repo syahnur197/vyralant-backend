@@ -37,6 +37,7 @@ class PostResource extends JsonResource
             'updated_at' => $this->updated_at,
             'upvotes_count' => $this->rating->upvotes,
             'downvotes_count' => $this->rating->downvotes,
+            'comments_count' => $this->comments_count,
             'upvoted' => $this->resource->upvotedBy($user),
             'downvoted' => $this->resource->downvotedBy($user),
             'rating' => $this->rating->ratings,

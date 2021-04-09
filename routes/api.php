@@ -20,6 +20,7 @@ Route::group(['prefix' => 'posts'], function () {
     Route::get('/', [PostController::class, 'index']);
     Route::get('{slug}', [PostController::class, 'show']);
     Route::get('{slug}/comments', [PostCommentController::class, 'index']);
+    Route::post('{post}/comments', [PostCommentController::class, 'store']);
     Route::post('{slug}/upvote', [VoteController::class, 'upvote'])->middleware('auth:sanctum');
     Route::post('{slug}/downvote', [VoteController::class, 'downvote'])->middleware('auth:sanctum');
     Route::post('search', [PostController::class, 'search']);

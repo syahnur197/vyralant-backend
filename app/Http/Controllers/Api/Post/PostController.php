@@ -44,6 +44,7 @@ class PostController extends Controller
     public function show(Request $request, $slug)
     {
         $post = Post::with('poster', 'media', 'rating')
+            ->withCount('comments')
             ->where('slug', $slug)
             ->first();
 
