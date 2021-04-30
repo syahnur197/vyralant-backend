@@ -28,9 +28,8 @@ class RegisterRequest extends FormRequest
     {
         $users_table = app(User::class)->getTable();
 
-        $password_rule = Password::min(12)
+        $password_rule = Password::min(8)
             ->letters()
-            ->mixedCase()
             ->numbers();
 
         return [

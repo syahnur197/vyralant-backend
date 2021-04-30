@@ -25,9 +25,8 @@ class UpdateUser extends FormRequest
     public function rules()
     {
 
-        $password_rule = Password::min(12)
+        $password_rule = Password::min(8)
             ->letters()
-            ->mixedCase()
             ->numbers();
 
         return [
