@@ -23,6 +23,7 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|Comment[] $comments
  * @property-read int|null $comments_count
+ * @property-read mixed $posted_at
  * @property-read \App\Models\Post $post
  * @property-read \App\Models\User|null $poster
  * @method static \Database\Factories\CommentFactory factory(...$parameters)
@@ -130,12 +131,16 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Comment[] $comments
  * @property-read int|null $comments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vote[] $downvotes
+ * @property-read int|null $downvotes_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Post[] $posts
  * @property-read int|null $posts_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Sanctum\PersonalAccessToken[] $tokens
  * @property-read int|null $tokens_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vote[] $upvotes
+ * @property-read int|null $upvotes_count
  * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Vote[] $votes
  * @property-read int|null $votes_count
  * @method static \Database\Factories\UserFactory factory(...$parameters)
@@ -160,6 +165,7 @@ namespace App\Models{
 /**
  * App\Models\Vote
  *
+ * @property int $id
  * @property string $voteable_type
  * @property string $voteable_id
  * @property string $user_id
@@ -172,6 +178,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Vote query()
  * @method static \Illuminate\Database\Eloquent\Builder|Vote whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Vote whereDownvote()
+ * @method static \Illuminate\Database\Eloquent\Builder|Vote whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Vote whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Vote whereUpvote()
  * @method static \Illuminate\Database\Eloquent\Builder|Vote whereUserId($value)

@@ -1,11 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\Auth\UserController;
 use App\Http\Controllers\Api\Post\PostController;
+use App\Http\Controllers\Api\Post\VoteController;
+use App\Http\Controllers\Api\User\UserController;
 use App\Http\Controllers\Api\Auth\LogoutController;
 use App\Http\Controllers\Api\Post\PostCommentController;
-use App\Http\Controllers\Api\Post\VoteController;
 
 Route::get('user', [UserController::class, 'index'])
     ->middleware('auth:sanctum')
@@ -14,6 +14,10 @@ Route::get('user', [UserController::class, 'index'])
 Route::post('auth/logout', LogoutController::class)
     ->middleware('auth:sanctum')
     ->name('logout');
+
+Route::group(['prefix' => 'user'], function () {
+    Route::post('/', [UserController::class, 'update']);
+});
 
 
 Route::group(['prefix' => 'posts'], function () {

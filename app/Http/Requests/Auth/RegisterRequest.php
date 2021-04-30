@@ -3,8 +3,9 @@
 namespace App\Http\Requests\Auth;
 
 use App\Models\User;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
+use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterRequest extends FormRequest
 {
@@ -27,11 +28,16 @@ class RegisterRequest extends FormRequest
     {
         $users_table = app(User::class)->getTable();
 
+        $password_rule = Password::min(12)
+            ->letters()
+            ->mixedCase()
+            ->numbers();
+
         return [
             'name' => ['required', 'string', 'min:3', 'max:50'],
             'email' => ['required', 'email', Rule::unique($users_table, 'email'), 'min:3', 'max:50'],
             'username' => ['required', 'string', 'alpha_num', Rule::unique($users_table, 'username'), 'min:3', 'max:30'],
-            'password' => ['required', 'confirmed', 'min:8'],
+            'password' => ['required', 'confirmed', $password_rule],
         ];
     }
 
