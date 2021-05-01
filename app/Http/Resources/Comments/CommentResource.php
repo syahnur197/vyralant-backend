@@ -2,7 +2,7 @@
 
 namespace App\Http\Resources\Comments;
 
-use App\Http\Resources\Posts\PosterResource;
+use App\Http\Resources\Users\UserResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CommentResource extends JsonResource
@@ -19,7 +19,7 @@ class CommentResource extends JsonResource
             'id' => $this->id,
             'content' => $this->content,
             'posted_at' => $this->posted_at,
-            'poster' => new PosterResource($this->poster),
+            'poster' => new UserResource($this->poster),
             // 'comments' => self::collection($this->comments),
 
         ];

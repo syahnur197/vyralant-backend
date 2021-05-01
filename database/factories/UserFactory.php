@@ -24,14 +24,14 @@ class UserFactory extends Factory
     {
 
         $images = [
-            "/users/1.jpg",
-            "/users/2.jpg",
-            "/users/3.jpg",
-            "/users/4.jpg",
-            "/users/5.jpg",
-            "/users/6.jpg",
-            "/users/7.jpg",
-            "/users/8.jpg",
+            "/fake_users/users/1.jpg",
+            "/fake_users/users/2.jpg",
+            "/fake_users/users/3.jpg",
+            "/fake_users/users/4.jpg",
+            "/fake_users/users/5.jpg",
+            "/fake_users/users/6.jpg",
+            "/fake_users/users/7.jpg",
+            "/fake_users/users/8.jpg",
         ];
 
         return [

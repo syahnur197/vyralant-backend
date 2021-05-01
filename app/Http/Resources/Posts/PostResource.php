@@ -3,8 +3,9 @@
 namespace App\Http\Resources\Posts;
 
 use App\Models\User;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Str;
+use App\Http\Resources\Users\UserResource;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class PostResource extends JsonResource
 {
@@ -43,7 +44,7 @@ class PostResource extends JsonResource
             'rating' => $this->rating->ratings,
             'posted_at' => $this->posted_at,
             'excerpt' => $this->excerpt,
-            'poster' => new PosterResource($this->poster),
+            'poster' => new UserResource($this->poster),
             'image' => $image,
         ];
     }

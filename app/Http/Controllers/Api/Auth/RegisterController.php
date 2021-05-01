@@ -5,12 +5,13 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 
 class RegisterController extends Controller
 {
-    public function __invoke(RegisterRequest $request)
+    public function __invoke(RegisterRequest $request, UserService $service)
     {
         /** @var User $user */
         $user = User::create($request->validated());
@@ -26,10 +27,11 @@ class RegisterController extends Controller
             ];
 
             return response()->json($response, Response::HTTP_INTERNAL_SERVER_ERROR);
-
         }
 
         try {
+
+            $service->uploadProfilePicture($user);
 
             $response = [
                 'success' => true,
@@ -37,7 +39,6 @@ class RegisterController extends Controller
             ];
 
             return response()->json($response, Response::HTTP_CREATED);
-
         } catch (\Exception $e) {
             Log::error('Fail to register user: ' . json_encode($request->all()));
             Log::error($e);

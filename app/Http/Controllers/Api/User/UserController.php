@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers\Api\User;
 
+use Exception;
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Requests\User\UpdateUser;
+use App\Http\Resources\Users\UserResource;
 
 class UserController
 {
     public function index(Request $request)
     {
-        return $request->user();
+        return new UserResource($request->user());
     }
 
     public function update(UpdateUser $request)
@@ -22,9 +26,18 @@ class UserController
             $user->password = $request->password;
         }
 
-        $update_user = $user->save();
+        try {
+            if ($request->has('profile_picture')) {
+                $file_name = Str::random(60);
+                $user->addMediaFromRequest('profile_picture')
+                    ->usingName($file_name)
+                    ->usingFileName($file_name)
+                    ->toMediaCollection('profile_picture');
+            }
 
-        if (!$update_user) {
+            $user->save();
+        } catch (Exception $error) {
+            Log::error($error);
             return response()->json([
                 'success' => false,
                 'message' => 'Fail to update your profile!',
