@@ -19,6 +19,7 @@ class CreatePostsTable extends Migration
             $table->string('category')->index();
             $table->string('post_type');
             $table->string('title')->unique();
+            $table->string('link')->nullable();
             $table->string('slug')->unique()->index();
             $table->longText('content')->nullable();
             $table->timestamps();

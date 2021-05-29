@@ -11,8 +11,9 @@ class CategoryService
         'world',
         'entertainment',
         'lifestyle',
+        'fun',
         'technology',
-        'memes',
+        'sport',
     ];
 
     public static function getCategories(): array
