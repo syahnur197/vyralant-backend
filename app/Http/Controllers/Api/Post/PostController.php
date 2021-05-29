@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\StorePost;
 use App\Http\Resources\Posts\PostResource;
 use App\Models\User;
+use App\Services\ImageUrlService;
 use App\Services\PostService;
 use Error;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileUnacceptableForCollection;
@@ -84,30 +85,10 @@ class PostController extends Controller
             if ($request->input('post_type') === 'link') {
                 $link = $request->input('link');
                 $post_id = $post->id;
+
                 dispatch(function () use ($link, $post_id) {
-                    $web = new phpscraper();
-                    $web->go($link);
-                    $images = $web->imagesWithDetails;
-
-                    if (count($images) < 1) {
-                        // remove post if there is no picture
-                        Post::where('id', $post_id)->delete();
-                        throw new Exception('URL has no featured image!');
-                    }
-
-                    $current_max_height = 0;
-                    $current_image      = [];
-
-                    // grab the image with the highest height
-                    // assuming the featured image is the highest
-                    foreach ($images as $image) {
-                        if ($image['height'] < $current_max_height) continue;
-
-                        $current_max_height = $image['height'];
-                        $current_image = $image;
-                    }
-
-                    $image_url = $current_image['url'];
+                    $image_url_service = app(ImageUrlService::class);
+                    $image_url = $image_url_service->getImageUrl($link, $post_id);
 
                     $file_name = Str::random(60);
                     $post = Post::find($post_id);
