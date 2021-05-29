@@ -22,7 +22,7 @@ class Post extends Model implements HasMedia, VoteableInterface
         HasVotes,
         InteractsWithMedia;
 
-    protected $fillable = ['posted_by', 'title', 'slug', 'content', 'post_type', 'category'];
+    protected $fillable = ['posted_by', 'title', 'slug', 'content', 'post_type', 'category', 'link'];
 
     protected $appends = ['posted_at', 'excerpt'];
 

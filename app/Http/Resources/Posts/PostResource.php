@@ -18,10 +18,18 @@ class PostResource extends JsonResource
     public function toArray($request)
     {
         // remove the id in the url whenever I use image from the fake_posts folder
-        $image = optional($this->media[0])->getFullUrl();
+        $image = optional($this->media);
 
-        if (Str::contains($image, 'fake_posts')) {
-            $image = Str::replaceFirst('/' . $this->media[0]->id, '', $image);
+
+        if ($image->count() > 0) {
+            $image = optional($this->media[0])->getFullUrl();
+
+            // provide placeholder image for fake posts
+            if (Str::contains($image, 'fake_posts')) {
+                $image = Str::replaceFirst('/' . $this->media[0]->id, '', $image);
+            }
+        } else if ($this->post_type === 'link') {
+            $image = "/placeholder/abstract.jpg";
         }
 
         /** @var User $user */

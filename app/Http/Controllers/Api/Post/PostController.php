@@ -13,7 +13,9 @@ use App\Http\Requests\Post\StorePost;
 use App\Http\Resources\Posts\PostResource;
 use App\Models\User;
 use App\Services\PostService;
+use Error;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileUnacceptableForCollection;
+use spekulatius\phpscraper;
 
 class PostController extends Controller
 {
@@ -77,6 +79,44 @@ class PostController extends Controller
                     ->usingName($file_name)
                     ->usingFileName($file_name)
                     ->toMediaCollection('image');
+            }
+
+            if ($request->input('post_type') === 'link') {
+                $link = $request->input('link');
+                $post_id = $post->id;
+                dispatch(function () use ($link, $post_id) {
+                    $web = new phpscraper();
+                    $web->go($link);
+                    $images = $web->imagesWithDetails;
+
+                    if (count($images) < 1) {
+                        // remove post if there is no picture
+                        Post::where('id', $post_id)->delete();
+                        throw new Exception('URL has no featured image!');
+                    }
+
+                    $current_max_height = 0;
+                    $current_image      = [];
+
+                    // grab the image with the highest height
+                    // assuming the featured image is the highest
+                    foreach ($images as $image) {
+                        if ($image['height'] < $current_max_height) continue;
+
+                        $current_max_height = $image['height'];
+                        $current_image = $image;
+                    }
+
+                    $image_url = $current_image['url'];
+
+                    $file_name = Str::random(60);
+                    $post = Post::find($post_id);
+
+                    $post->addMediaFromUrl($image_url)
+                        ->usingName($file_name)
+                        ->usingFileName($file_name)
+                        ->toMediaCollection('image');
+                });
             }
 
             $user->upvote($post);
