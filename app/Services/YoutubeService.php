@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
-
 class YoutubeService
 {
     public function formatUrlIfYoutubeLink($link)

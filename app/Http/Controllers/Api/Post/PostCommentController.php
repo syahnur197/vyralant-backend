@@ -20,7 +20,7 @@ class PostCommentController
             ->whereSlug($slug)
             ->first();
 
-        $comments = $post->comments;
+        $comments = $post->comments()->latest('created_at')->get();
 
         $comments = CommentResource::collection($comments);
 
