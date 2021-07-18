@@ -14,6 +14,7 @@ use App\Http\Resources\Posts\PostResource;
 use App\Models\User;
 use App\Services\ImageUrlService;
 use App\Services\PostService;
+use App\Services\YoutubeService;
 use Error;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileUnacceptableForCollection;
 use spekulatius\phpscraper;
@@ -72,6 +73,8 @@ class PostController extends Controller
         DB::beginTransaction();
         try {
             /** @var Post $post */
+            $yts = app(YoutubeService::class);
+            $post_data['link'] = $yts->formatUrlIfYoutubeLink($post_data['link']);
             $post = $user->posts()->create($post_data);
 
             if ($request->hasFile('image')) {
