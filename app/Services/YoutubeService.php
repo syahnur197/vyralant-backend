@@ -14,11 +14,16 @@ class YoutubeService
         // if youtube link and contain the word embed
         if ($this->_contains($link, ['embed'])) return $link;
 
-        $query_params = parse_url($link, PHP_URL_QUERY);
+        return $this->_convertYoutube($link);
+    }
 
-        parse_str($query_params, $query);
-
-        return "https://www.youtube.com/embed/" . $query['v'];
+    private function _convertYoutube($string)
+    {
+        return preg_replace(
+            "/\s*[a-zA-Z\/\/:\.]*youtu(be.com\/watch\?v=|.be\/)([a-zA-Z0-9\-_]+)([a-zA-Z0-9\/\*\-\_\?\&\;\%\=\.]*)/i",
+            "https://www.youtube.com/embed/$2",
+            $string
+        );
     }
 
     private function _contains($str, array $arr)
