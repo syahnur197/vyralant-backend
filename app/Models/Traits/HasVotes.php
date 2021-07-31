@@ -47,6 +47,10 @@ trait HasVotes
             ? 0.00
             : ($upvotes_count / $votes_count) * 100;
 
+        $days = $this->created_at->diffInDays(now());
+
+        $ratings = $ratings * pow(0.9, $days);
+
         $this->rating()->updateOrCreate([], [
             'upvotes' => $upvotes_count,
             'downvotes' => $downvotes_count,
