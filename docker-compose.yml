@@ -50,6 +50,15 @@ services:
           test: ["CMD", "redis-cli", "ping"]
           retries: 3
           timeout: 5s
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - 8090:8080
+        networks:
+            - sail
+        depends_on:
+            - mysql
 networks:
     sail:
         driver: bridge

@@ -17,6 +17,7 @@ use App\Services\PostService;
 use App\Services\PostTypeService;
 use App\Services\YoutubeService;
 use Error;
+use Illuminate\Support\Arr;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileUnacceptableForCollection;
 use spekulatius\phpscraper;
 
@@ -74,22 +75,16 @@ class PostController extends Controller
         DB::beginTransaction();
         try {
             
-            if ($post_data['type'] === 'link') {
+            if ($post_data['post_type'] === 'link') {
                 $yts = app(YoutubeService::class);
                 $post_data['link'] = $yts->formatUrlIfYoutubeLink($post_data['link']);
-                $post_data['type'] = $yts->isYoutubeLink($post_data['link']) ? 'video' : $post_data['type'];
+                $post_data['post_type'] = $yts->isYoutubeLink($post_data['link']) ? 'video' : $post_data['type'];
             }
 
             /** @var Post $post */
             $post = $user->posts()->create($post_data);
 
-            if ($request->hasFile('image')) {
-                $file_name = Str::random(60);
-                $post->addMediaFromRequest('image')
-                    ->usingName($file_name)
-                    ->usingFileName($file_name)
-                    ->toMediaCollection('image');
-            }
+            $file_name = Str::random(60);
 
             if ($request->input('post_type') === 'link') {
                 $link = $request->input('link');
@@ -107,6 +102,20 @@ class PostController extends Controller
                         ->usingFileName($file_name)
                         ->toMediaCollection('image');
                 });
+            } else if ($request->hasFile('image')) {
+                // most likely post type is image
+                $post->addMediaFromRequest('image')
+                    ->usingName($file_name)
+                    ->usingFileName($file_name)
+                    ->toMediaCollection('image');
+            } else {
+                // most likely post type is discussion
+                $file_name = 'image/' . Arr::random([1,2,3,4]). '.jpeg';
+                $path = storage_path($file_name);
+                $post->addMediaFromDisk($path)
+                    ->usingName($file_name)
+                    ->usingFileName($file_name)
+                    ->toMediaCollection('image');
             }
 
             $user->upvote($post);
