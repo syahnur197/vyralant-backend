@@ -14,7 +14,7 @@ class AddDecayedRatingInRatingsTable extends Migration
     public function up()
     {
         Schema::table('ratings', function (Blueprint $table) {
-            $table->decimal('decayed_ratings', 5, 2)->default(0);
+            $table->decimal('decayed_ratings', 5, 2)->default(0)->after('ratings');
         });
     }
 
