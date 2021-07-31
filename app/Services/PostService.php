@@ -17,7 +17,7 @@ class PostService
             ->select('posts.*', 'ratings.ratings', 'ratings.upvotes', 'ratings.downvotes')
             ->join('ratings', 'ratings.rateable_id', '=', 'posts.id')
             ->withCount('comments')
-            ->orderBy('ratings.ratings', 'desc')
+            ->orderBy('ratings.decayed_ratings', 'desc')
             ->orderBy('posts.created_at', 'desc');
     }
 }

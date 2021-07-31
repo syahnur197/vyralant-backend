@@ -13,6 +13,7 @@ class Rating extends Model
         'upvotes',
         'downvotes',
         'ratings',
+        'decayed_ratings',
     ];
 
     public function rateable()
