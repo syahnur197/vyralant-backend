@@ -9,12 +9,17 @@ class YoutubeService
         if ($link === null || $link === "") return $link;
 
         // if not youtube link
-        if (!$this->_contains($link, ['youtube.com', 'youtu.be'])) return $link;
+        if (!$this->isYoutubeLink($link)) return $link;
 
         // if youtube link and contain the word embed
         if ($this->_contains($link, ['embed'])) return $link;
 
         return $this->_convertYoutube($link);
+    }
+
+    public function isYoutubeLink($link)
+    {
+        return $this->_contains($link, ['youtube.com', 'youtu.be']);
     }
 
     private function _convertYoutube($string)
