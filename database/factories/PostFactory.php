@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\CategoryService;
 use App\Services\PostTypeService;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Arr;
 
 class PostFactory extends Factory
 {
@@ -28,7 +29,7 @@ class PostFactory extends Factory
 
         return [
             'category' => CategoryService::getRandomCategory(),
-            'post_type' => ['image', 'discussion'],
+            'post_type' => Arr::random(['image', 'discussion']),
             'title' => $this->faker->sentence(),
             'content' => $this->faker->sentences($this->faker->numberBetween(5, 15), true),
             'posted_by' => $user->id,
