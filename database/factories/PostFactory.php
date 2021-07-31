@@ -28,7 +28,7 @@ class PostFactory extends Factory
 
         return [
             'category' => CategoryService::getRandomCategory(),
-            'post_type' => PostTypeService::getRandomPostType(),
+            'post_type' => ['image', 'discussion'],
             'title' => $this->faker->sentence(),
             'content' => $this->faker->sentences($this->faker->numberBetween(5, 15), true),
             'posted_by' => $user->id,
