@@ -110,8 +110,9 @@ class PostController extends Controller
                     ->toMediaCollection('image');
             } else {
                 // most likely post type is discussion
-                $file_name = 'image/' . Arr::random([1,2,3,4]). '.jpeg';
-                $post->addMediaFromUrl(url($file_name))
+                $file_name = 'image/' . Arr::random([1,2,3]). '.jpeg';
+                $post->addMedia(public_path($file_name))
+                    ->preservingOriginal(true)
                     ->usingName($file_name)
                     ->usingFileName($file_name)
                     ->toMediaCollection('image');
