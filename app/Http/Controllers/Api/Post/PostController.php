@@ -90,18 +90,16 @@ class PostController extends Controller
                 $link = $request->input('link');
                 $post_id = $post->id;
 
-                dispatch(function () use ($link, $post_id) {
-                    $image_url_service = app(ImageUrlService::class);
-                    $image_url = $image_url_service->getImageUrl($link, $post_id);
+                $image_url_service = app(ImageUrlService::class);
+                $image_url = $image_url_service->getImageUrl($link, $post_id);
 
-                    $file_name = Str::random(60);
-                    $post = Post::find($post_id);
+                $file_name = Str::random(60);
+                $post = Post::find($post_id);
 
-                    $post->addMediaFromUrl($image_url)
-                        ->usingName($file_name)
-                        ->usingFileName($file_name)
-                        ->toMediaCollection('image');
-                });
+                $post->addMediaFromUrl($image_url)
+                    ->usingName($file_name)
+                    ->usingFileName($file_name)
+                    ->toMediaCollection('image');
             } else if ($request->hasFile('image')) {
                 // most likely post type is image
                 $post->addMediaFromRequest('image')
