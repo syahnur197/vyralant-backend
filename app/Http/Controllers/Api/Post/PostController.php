@@ -74,11 +74,11 @@ class PostController extends Controller
 
         DB::beginTransaction();
         try {
-            
+
             if ($post_data['post_type'] === 'link') {
                 $yts = app(YoutubeService::class);
                 $post_data['link'] = $yts->formatUrlIfYoutubeLink($post_data['link']);
-                $post_data['post_type'] = $yts->isYoutubeLink($post_data['link']) ? 'video' : $post_data['type'];
+                $post_data['post_type'] = $yts->isYoutubeLink($post_data['link']) ? 'video' : $post_data['post_type'];
             }
 
             /** @var Post $post */
@@ -110,7 +110,7 @@ class PostController extends Controller
                     ->toMediaCollection('image');
             } else {
                 // most likely post type is discussion
-                $file_name = 'image/' . Arr::random([1,2,3]). '.jpeg';
+                $file_name = 'image/' . Arr::random([1, 2, 3]) . '.jpeg';
                 $post->addMedia(public_path($file_name))
                     ->preservingOriginal(true)
                     ->usingName($file_name)
