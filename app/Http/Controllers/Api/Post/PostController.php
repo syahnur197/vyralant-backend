@@ -144,6 +144,7 @@ class PostController extends Controller
             ], 400);
         } catch (Exception $e) {
             Log::error("PostController@store " . json_encode($e->getMessage()));
+            Log::error($e->getTraceAsString());
             DB::rollBack();
 
             return response()->json([

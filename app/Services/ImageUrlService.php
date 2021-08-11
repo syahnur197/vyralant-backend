@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\NoValidImageFound;
 use App\Models\Post;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use spekulatius\phpscraper;
 
 class ImageUrlService
@@ -49,8 +50,11 @@ class ImageUrlService
 
             if (!$contains_jpeg && !$contains_jpg && !$contains_png) continue;
 
-            $image_area = $image['height'] * $image['width'];
+            $image_area = (int) $image['height'] * (int) $image['width'];
 
+            Log::info("URL: " . $image["url"]);
+            Log::info("Area: " . $image_area);
+            
             if ($image_area < $current_max_area) continue;
 
 
