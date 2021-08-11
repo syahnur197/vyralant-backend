@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Post;
 
+use App\Exceptions\NoValidImageFound;
 use Exception;
 use App\Models\Post;
 use Illuminate\Support\Str;
@@ -127,6 +128,14 @@ class PostController extends Controller
             ], 201);
         } catch (FileUnacceptableForCollection $e) {
             Log::error("PostController@store " . json_encode($e->getMessage()));
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
+        } catch (NoValidImageFound $e) {
+            Log::error("PostController@store: " . $e->getMessage());
             DB::rollBack();
 
             return response()->json([

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\NoValidImageFound;
 use App\Models\Post;
 use Exception;
 use spekulatius\phpscraper;
@@ -10,6 +11,8 @@ class ImageUrlService
 {
     public function getImageUrl($link, $post_id)
     {
+
+
         $web = new phpscraper();
         $web->go($link);
         $images = $web->imagesWithDetails;
@@ -24,17 +27,39 @@ class ImageUrlService
             throw new Exception('URL has no featured image!');
         }
 
-        $current_max_height = 0;
+        // Get the OG Image first
+
+        $tags = get_meta_tags($link);
+
+        if (array_key_exists("og:image", $tags)) return $tags["og:image"];
+        
+        if (array_key_exists("twitter:image:src", $tags)) return $tags["twitter:image:src"];
+
+        if (array_key_exists("twitter:image", $tags)) return $tags["twitter:image"];
+
+        $current_max_area   = 0;
         $current_image      = [];
 
         // grab the image with the highest height
         // assuming the featured image is the highest
         foreach ($images as $image) {
-            if ($image['height'] < $current_max_height) continue;
+            $contains_jpg = str_contains($image['url'], "jpg");
+            $contains_jpeg = str_contains($image['url'], "jpeg");
+            $contains_png = str_contains($image['url'], "png");
 
-            $current_max_height = $image['height'];
+            if (!$contains_jpeg && !$contains_jpg && !$contains_png) continue;
+
+            $image_area = $image['height'] * $image['width'];
+
+            if ($image_area < $current_max_area) continue;
+
+
+            $current_max_area = $image_area;
             $current_image = $image;
         }
+
+        if ($current_max_area === 0) throw new NoValidImageFound("No valid featured image found in: " . $link);
+
 
         return $current_image['url'];
     }
