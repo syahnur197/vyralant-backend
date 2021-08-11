@@ -87,6 +87,6 @@ class Post extends Model implements HasMedia, VoteableInterface
         $this->addMediaCollection('image')
             ->useDisk('s3')
             ->singleFile()
-            ->acceptsMimeTypes(['image/jpeg', 'image/png']);
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif']);
     }
 }
