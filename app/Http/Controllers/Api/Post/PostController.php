@@ -144,13 +144,13 @@ class PostController extends Controller
     private function _getFileAdder(StorePost $request, Post $post): FileAdder
     {
         if ($request->input('post_type') === PostTypeService::LINK) {
-            $image_url = secure_asset('image/4.jpeg');
-            return $post->addMediaFromUrl($image_url);
+            $image_url = public_path('image/4.jpeg');
+            return $post->addMedia($image_url);
         } else if ($request->hasFile('image')) {
             return $post->addMediaFromRequest('image');
         } else {
             $file_name = 'image/' . Arr::random([1, 2, 3]) . '.jpeg';
-            return $post->addMediaFromUrl(secure_asset($file_name));
+            return $post->addMedia(public_path($file_name));
         }
 
         throw new Exception('Invalid post type');
