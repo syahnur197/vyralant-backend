@@ -145,7 +145,7 @@ class PostController extends Controller
     {
         if ($request->input('post_type') === PostTypeService::LINK) {
             $image_url = public_path('image/4.jpeg');
-            return $post->addMediaFromUrl($image_url);
+            return $post->addMedia(public_path($image_url));
         } else if ($request->hasFile('image')) {
             return $post->addMediaFromRequest('image');
         } else {
