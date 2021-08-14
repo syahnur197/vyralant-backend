@@ -2,29 +2,43 @@
 
 namespace App\Http\Controllers\Api\Post;
 
-use App\Exceptions\NoValidImageFound;
-use Exception;
-use App\Models\Post;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\StorePost;
 use App\Http\Resources\Posts\PostResource;
+use App\Jobs\Post\PostLinkImageService;
+use App\Models\Post;
 use App\Models\User;
-use App\Services\ImageUrlService;
 use App\Services\PostService;
 use App\Services\PostTypeService;
 use App\Services\YoutubeService;
-use Error;
+use Exception;
+use Illuminate\Database\DatabaseManager;
+use Illuminate\Http\Request;
+use Illuminate\Log\LogManager;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileUnacceptableForCollection;
-use spekulatius\phpscraper;
+use Spatie\MediaLibrary\MediaCollections\FileAdder;
 
 class PostController extends Controller
 {
     private $per_page_limit = 8;
+
+    private $_log;
+
+    private $_yts;
+
+    private $_db;
+
+    public function __construct(
+        LogManager $log,
+        YoutubeService $yts,
+        DatabaseManager $db,
+    ) {
+        $this->_log = $log;
+        $this->_yts = $yts;
+        $this->_db = $db;
+    }
 
     public function index(PostService $service)
     {
@@ -44,6 +58,8 @@ class PostController extends Controller
             ->where('category', strtolower($category));
 
         $posts = $posts->paginate($this->per_page_limit);
+
+        $this->_log->info('Searching post for category: ' . $category);
 
         return PostResource::collection($posts);
     }
@@ -70,87 +86,85 @@ class PostController extends Controller
             ], 400);
         }
 
-
         $post_data = $request->validated();
 
-        DB::beginTransaction();
+        $this->_log->info('Store post: ' . json_encode($post_data));
+
+        $this->_db->beginTransaction();
         try {
-
-            if ($post_data['post_type'] === 'link') {
-                $yts = app(YoutubeService::class);
-                $post_data['link'] = $yts->formatUrlIfYoutubeLink($post_data['link']);
-                $post_data['post_type'] = $yts->isYoutubeLink($post_data['link']) ? 'video' : $post_data['post_type'];
-            }
-
             /** @var Post $post */
-            $post = $user->posts()->create($post_data);
+            $post = $user->posts()->create(
+                $this->_getYoutubeLinkIfPostTypeLink($post_data)
+            );
 
             $file_name = Str::random(60);
 
-            if ($request->input('post_type') === 'link') {
-                $link = $request->input('link');
-                $post_id = $post->id;
+            $this->_getFileAdder($request, $post)
+                ->usingName($file_name)
+                ->preservingOriginal(true)
+                ->usingFileName($file_name)
+                ->toMediaCollection('image');
 
-                $image_url_service = app(ImageUrlService::class);
-                $image_url = $image_url_service->getImageUrl($link, $post_id);
-
-                $file_name = Str::random(60);
-                $post = Post::find($post_id);
-
-                $post->addMediaFromUrl($image_url)
-                    ->usingName($file_name)
-                    ->usingFileName($file_name)
-                    ->toMediaCollection('image');
-            } else if ($request->hasFile('image')) {
-                // most likely post type is image
-                $post->addMediaFromRequest('image')
-                    ->usingName($file_name)
-                    ->usingFileName($file_name)
-                    ->toMediaCollection('image');
-            } else {
-                // most likely post type is discussion
-                $file_name = 'image/' . Arr::random([1, 2, 3]) . '.jpeg';
-                $post->addMedia(public_path($file_name))
-                    ->preservingOriginal(true)
-                    ->usingName($file_name)
-                    ->usingFileName($file_name)
-                    ->toMediaCollection('image');
+            if ($request->input('post_type') === PostTypeService::LINK) {
+                PostLinkImageService::dispatch(
+                    $post,
+                    $request->input('link'),
+                )->delay(now()->addSeconds(5));
             }
 
             $user->upvote($post);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Successfully created a post!',
-                'post'    => $post,
-            ], 201);
         } catch (FileUnacceptableForCollection $e) {
-            Log::error("PostController@store " . json_encode($e->getMessage()));
-            DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 400);
-        } catch (NoValidImageFound $e) {
-            Log::error("PostController@store: " . $e->getMessage());
-            DB::rollBack();
+            $this->_log->error("PostController@store " . json_encode($e->getMessage()));
+            $this->_db->rollBack();
 
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
             ], 400);
         } catch (Exception $e) {
-            Log::error("PostController@store " . json_encode($e->getMessage()));
-            Log::error($e->getTraceAsString());
-            DB::rollBack();
+            $this->_log->error("PostController@store " . json_encode($e->getMessage()));
+            $this->_log->error($e->getTraceAsString());
+            $this->_db->rollBack();
 
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to submit a post! Please try again!',
             ], 400);
         }
+
+        $this->_db->commit();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Successfully created a post!',
+            'post' => $post,
+        ], 201);
+    }
+
+    private function _getFileAdder(StorePost $request, Post $post): FileAdder
+    {
+        if ($request->input('post_type') === PostTypeService::LINK) {
+            $image_url = public_path('image/4.jpeg');
+            return $post->addMediaFromUrl($image_url);
+        } else if ($request->hasFile('image')) {
+            return $post->addMediaFromRequest('image');
+        } else {
+            $file_name = 'image/' . Arr::random([1, 2, 3]) . '.jpeg';
+            return $post->addMedia(public_path($file_name));
+        }
+
+        throw new Exception('Invalid post type');
+    }
+
+    private function _getYoutubeLinkIfPostTypeLink($post_data): array
+    {
+        if ($post_data['post_type'] !== PostTypeService::LINK) {
+            return $post_data;
+        }
+
+        $post_data['link'] = $this->_yts->formatUrlIfYoutubeLink($post_data['link']);
+        $post_data['post_type'] = $this->_yts->isYoutubeLink($post_data['link']) ? 'video' : $post_data['post_type'];
+
+        return $post_data;
     }
 }

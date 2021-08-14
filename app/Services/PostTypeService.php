@@ -4,11 +4,17 @@ namespace App\Services;
 
 class PostTypeService
 {
+
+    const DISCUSSION = 'discussion';
+    const VIDEO      = 'video';
+    const IMAGE      = 'image';
+    const LINK       = 'link';
+
     const POST_TYPES = [
-        'discussion',
-        'video',
-        'image',
-        'link',
+        self::DISCUSSION,
+        self::VIDEO,
+        self::IMAGE,
+        self::LINK,
     ];
 
     public static function getPostTypes(): array

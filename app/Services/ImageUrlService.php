@@ -10,10 +10,8 @@ use spekulatius\phpscraper;
 
 class ImageUrlService
 {
-    public function getImageUrl($link, $post_id)
+    public function getImageUrl($link)
     {
-
-
         $web = new phpscraper();
         $web->go($link);
         $images = $web->imagesWithDetails;
@@ -21,12 +19,6 @@ class ImageUrlService
         list($is_youtube, $video_id) = $this->_isYoutubeVideo($link);
 
         if ($is_youtube) return "https://img.youtube.com/vi/$video_id/hqdefault.jpg";
-
-        if (count($images) < 1) {
-            // remove post if there is no picture
-            Post::where('id', $post_id)->delete();
-            throw new Exception('URL has no featured image!');
-        }
 
         // Get the OG Image first
 
