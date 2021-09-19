@@ -32,11 +32,14 @@ class UsersSeeder extends Seeder
                 $this->service->uploadProfilePicture($user);
             });
 
-        User::factory()
-            ->count(100)
-            ->create()
-            ->each(function ($user) {
-                $this->service->uploadProfilePicture($user);
-            });
+        if (config('app.env') === 'local') {
+            User::factory()
+                ->count(100)
+                ->create()
+                ->each(function ($user) {
+                    $this->service->uploadProfilePicture($user);
+                });
+        }
+
     }
 }

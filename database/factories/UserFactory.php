@@ -39,7 +39,7 @@ class UserFactory extends Factory
             'username' => $this->faker->unique()->userName,
             'email' => $this->faker->unique()->safeEmail,
             'email_verified_at' => now(),
-            'password' => 'password',
+            'password' => 'j2Mf7SCbz2KdC2xDGF9U',
             'remember_token' => Str::random(10),
             'image_url' => collect($images)->random(), // temporary
         ];
@@ -63,9 +63,9 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'name' => 'admin',
-                'username' => 'admin',
-                'email' => 'admin@admin.com',
+                'name' => 'syahnur',
+                'username' => 'syahnur',
+                'email' => 'syahnur@admin.com',
             ];
         });
     }

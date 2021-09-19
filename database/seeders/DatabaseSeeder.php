@@ -14,8 +14,11 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call(UsersSeeder::class);
-        $this->call(PostsSeeder::class);
-        $this->call(CommentsSeeder::class);
-        $this->call(VotesSeeder::class);
+
+        if (config('app.env') === 'local') {
+            $this->call(PostsSeeder::class);
+            $this->call(CommentsSeeder::class);
+            $this->call(VotesSeeder::class);
+        }
     }
 }
